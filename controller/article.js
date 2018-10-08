@@ -15,12 +15,12 @@ router.post('/article',async (req,res,next)=>{
             })
             res.json({
                 code:200,
-                msg:'添加文章成功!'
+                msg:'笔记发布成功!'
             })
         }else {
             res.json({
                 code:403,
-                msg:'请登录后在写文章'
+                msg:'请登录后在写笔记'
             })
         }
     }catch(err){
@@ -31,7 +31,7 @@ router.get('/article',(req,res,next)=>{
     let {pn=1,size=10} = req.query
     pn = parseInt(pn)
     size = parseInt(size)
-    articleModel.find().skip((pn-1)*size).limit(size)
+    articleModel.find().skip((pn-1)*size).limit(size).sort({_id:-1})
         .populate({
             path:'author',
             select: '-password',
@@ -42,6 +42,21 @@ router.get('/article',(req,res,next)=>{
                 code:200,
                 data
             })
+    })
+})
+router.get('/article/:id',(req,res,next)=>{
+    const {id} = req.params
+    articleModel.findById(id).
+    populate({
+        path:'author',
+        select: '-password',
+    }).populate({
+        path:'category'
+    }).then(data=>{
+        res.json({
+            code:200,
+            data
+        })
     })
 })
 
